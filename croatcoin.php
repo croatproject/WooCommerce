@@ -273,11 +273,17 @@ function croatcoin_init()
             }
             $wallet = rand(0, $i);
              
-            if ($method == "croat") { 
-                
-                $description = "<span style='font-size:14px'>Per completar la comanda, ha d'enviar la quantitat de <b>" . $croats . " CROATS</b> al següent moneder: <b>";
-                $description .= $payments[$wallet];
-                $description .= "</b><br>Un cop es rebi la transacció s'enviarà la comanda.</span>";
+            if ($method == "croat") {        
+                if (get_post_meta( $order->ID, '_transaction_id', true) == ""){
+                    update_post_meta( $order->ID, '_transaction_id' , $croats.':'.$payments[$wallet]);
+                    $description = '<br><strong>TOTAL</strong>: '.$croats.' Croats';
+                    $description .= '<br><strong>WALLET</strong>: '.$payments[$wallet];
+                }else{
+                    $transaction_id = explode(":", get_post_meta( $order->ID, '_transaction_id', true)); 
+                    $description .= "<span style='font-size:14px'>Per completar la comanda, ha d'enviar la quantitat de <b>" . $transaction_id[0] . " CROATS</b> al següent moneder: <b>";
+                    $description .= $transaction_id[1];
+                    $description .= "</b><br>Un cop es rebi la transacció s'enviarà la comanda.</span>";
+                }
                 echo wpautop(wptexturize($description));
             }
         }
