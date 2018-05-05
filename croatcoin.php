@@ -3,7 +3,7 @@
 Plugin Name: CROATCoin WooCommerce Gateway
 Plugin URI: https://github.com/croatproject/WooCommerce
 Description: Passarela de pagament amb CROAT per Woocommerce
-Version: 0.2
+Version: 0.3
 Author: Croat Project Team
 Author URI: https://croat.cat/
 */
@@ -240,11 +240,9 @@ function croatcoin_init()
         
         public function thankyou()
         {
-        echo "hola2";
         }
         public function thankyou_page()
         {
-        echo "hola";
         }
         public function email_instructions($order, $sent_to_admin, $plain_text = false)
         {
