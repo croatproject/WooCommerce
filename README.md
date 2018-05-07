@@ -6,7 +6,7 @@ WooCommerce Croat plugin
 * Set fixed parity
 * Use market parity - Updated from (https://www.worldcoinindex.com)
 
-#### Pluggins 
+#### Plugins 
 * ![img1](http://i.imgur.com/ag1V0gb.png)
 
 #### Payment gateways
