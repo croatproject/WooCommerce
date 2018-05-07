@@ -1,0 +1,120 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CROATCoin WooCommerce Gateway\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-06 18:04+0000\n"
+"PO-Revision-Date: 2018-05-06 18:05+0000\n"
+"Last-Translator: croatproject\n"
+"Language-Team: English (United States)\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/"
+
+#: croatcoin.php:65
+msgid "Pagaments amb CROAT."
+msgstr "Payments with CROAT."
+
+#: croatcoin.php:73
+msgid ""
+"Realitza el pagament directament amb CROATs, t'enviarem un email amb el "
+"total i el moneder on fer l'ingrés."
+msgstr ""
+"Make the payment directly with CROAT, we will send you an email with total "
+"amount and wallet where to make the deposit."
+
+#: croatcoin.php:108
+msgid "Activar/Desactivar"
+msgstr "Enable/Disable"
+
+#: croatcoin.php:110
+msgid "Activar pagaments amb CROATCoin"
+msgstr "Enable payments with CROATCoin"
+
+#: croatcoin.php:115
+msgid "Paritat"
+msgstr "Parity"
+
+#: croatcoin.php:117
+msgid ""
+"Paritat dels productes en € cap a CROATs. Deixar en blanc per fer servir "
+"preu de mercat."
+msgstr "Products parity in € to CROATs. Leave blank to use market price."
+
+#: croatcoin.php:124
+msgid "S'aconsella posar diversos moneders per rebre el pagament."
+msgstr "It is advisable to put several wallets to receive payments."
+
+#: croatcoin.php:155
+msgid "Pagament en CROATS"
+msgstr "Payment in CROAT"
+
+#: croatcoin.php:156
+msgid "Què es CROAT?"
+msgstr "What is CROAT?"
+
+#: croatcoin.php:158
+msgid "Total en CROATS:"
+msgstr "Total in CROAT:"
+
+#: croatcoin.php:158
+msgid "aplicant una paritat de"
+msgstr "applying a parity of"
+
+#: croatcoin.php:177
+msgid "Moneders de pagament en CROATs"
+msgstr "CROAT payment wallets"
+
+#: croatcoin.php:185
+msgid "Direcció del Moneder"
+msgstr "Wallet address"
+
+#: croatcoin.php:206
+msgid "+ Afegir moneder"
+msgstr "+ Add wallet"
+
+#: croatcoin.php:208
+msgid "Esborrar seleccionats"
+msgstr "Clear selected"
+
+#: croatcoin.php:290
+msgid "TOTAL"
+msgstr "TOTAL"
+
+#: croatcoin.php:291
+msgid "WALLET"
+msgstr "WALLET"
+
+#: croatcoin.php:294
+msgid "Per completar la comanda, ha d'enviar la quantitat de"
+msgstr "To complete the order, you must send the amount of"
+
+#: croatcoin.php:294
+msgid "al següent moneder:"
+msgstr "to this wallet:"
+
+#: croatcoin.php:296
+msgid "Un cop es rebi la transacció s'enviarà la comanda."
+msgstr "Once the transaction is received, the order will be sent."
+
+#. Name of the plugin
+msgid "CROATCoin WooCommerce Gateway"
+msgstr "CROATCoin WooCommerce Gateway"
+
+#. Description of the plugin
+msgid "Passarela de pagament amb CROAT per Woocommerce"
+msgstr "CROAT Payment gateway for Woocommerce"
+
+#. URI of the plugin
+msgid "https://github.com/croatproject/WooCommerce"
+msgstr "https://github.com/croatproject/WooCommerce"
+
+#. Author of the plugin
+msgid "Croat Project Team"
+msgstr "Croat Project Team"
+
+#. Author URI of the plugin
+msgid "https://croat.cat/"
+msgstr "https://croat.cat/en/"
