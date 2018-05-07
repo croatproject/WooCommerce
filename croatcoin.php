@@ -171,7 +171,7 @@ function croatcoin_init()
                     
                     echo '<tr class="account">
                            <td class="sort"></td>
-                           <td><input type="text" value="' . esc_attr(wp_unslash($account['hash_name'])) . '" name="croat_hashs[' . $i . ']" /></td>';
+                           <td><input type="text" value="' . esc_attr(wp_unslash($account['hash_name'])) . '" name="croat_hashs[' . $i . ']" size="120" /></td>';
                 }
             }
             
