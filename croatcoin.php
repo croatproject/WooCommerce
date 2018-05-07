@@ -264,7 +264,7 @@ function croatcoin_init()
             if ($method == "croat") {        
                 if (get_post_meta( $order->ID, '_transaction_id', true) == ""){
                     update_post_meta( $order->ID, '_transaction_id' , $croats.':'.$payments[$wallet]);
-                    $description = '<br><strong>'.__('TOTAL', 'croatcoin').',</strong>: '.$croats.' Croats';
+                    $description = '<br><strong>'.__('TOTAL', 'croatcoin').'</strong>: '.$croats.' Croats';
                     $description .= '<br><strong>'.__('WALLET', 'croatcoin').'</strong>: '.$payments[$wallet];
                 }else{
                     $transaction_id = explode(":", get_post_meta( $order->ID, '_transaction_id', true)); 
