@@ -3,7 +3,7 @@
 Plugin Name: CROATCoin WooCommerce Gateway
 Plugin URI: https://github.com/croatproject/WooCommerce
 Description: Passarela de pagament amb CROAT per Woocommerce
-Version: 0.4
+Version: 0.5
 Author: Croat Project Team
 Author URI: https://croat.cat/
 */
@@ -115,24 +115,24 @@ function croatcoin_init()
             
             if ($paritat != ""){
                 $croats = $euros / (float)$paritat;
-                $croats = round($croats, 2);           
+                $croats = round($croats, 4);           
             } else {
               $api= "https://www.worldcoinindex.com/apiservice/ticker?key=yCLLGOW7SGGVwi7EPRA3sMe8ewu7BN&label=croatbtc&fiat=eur";
               $getapi = file_get_contents($api);
               $valorcroat = json_decode($getapi, true);
               $paritat= $valorcroat['Markets'][0]['Price'];
               $croats= $euros/$paritat;
-              $croats= round($croats, 2);    
+              $croats= round($croats, 4);    
             }
              
-            wp_dequeue_script( 'wc-checkout' );
+            //wp_dequeue_script( 'wc-checkout' );
             
             $dir_croat = plugin_dir_url(__FILE__);
             
             $icon_html .= '<img src="' . $dir_croat . '/croat.png" alt="'.__('Pagament en CROATS', 'croatcoin').'"/> ';
             $icon_html .= '<a href="https://www.croat.cat" target="_blank" >'.__('Què es CROAT?', 'croatcoin').'</a>';
             
-            $icon_html .= '  <div style="font-size: 13px">'.__('Total en CROATS:', 'croatcoin').' <b>' . $croats . ' CROATS</b>, '.__('aplicant una paritat de', 'croatcoin').' ' . round($paritat, 2) . ' €/CROAT</div>';
+            $icon_html .= '  <div style="font-size: 13px">'.__('Total en CROATS:', 'croatcoin').' <b>' . $croats . ' CROATS</b>, '.__('aplicant una paritat de', 'croatcoin').' ' . round($paritat, 4) . ' €/CROAT - <small><a href="https://www.worldcoinindex.com/coin/croatcoin" target="_blank">WorldCoinIndex</a></small></div>';
             
             return apply_filters('woocommerce_gateway_icon', $icon_html, $this->id);
         }
@@ -242,14 +242,14 @@ function croatcoin_init()
            
             if ($paritat != ""){
                 $croats = $euros / (float)$paritat;
-                $croats = round($croats, 2);           
+                $croats = round($croats, 4);           
             } else {
               $api= "https://www.worldcoinindex.com/apiservice/ticker?key=yCLLGOW7SGGVwi7EPRA3sMe8ewu7BN&label=croatbtc&fiat=eur";
               $getapi = file_get_contents($api);
               $valorcroat = json_decode($getapi, true);
               $paritat= $valorcroat['Markets'][0]['Price'];
               $croats= $euros/$paritat;
-              $croats= round($croats, 2);    
+              $croats= round($croats, 4);    
             }           
             
             $payments  = array();
