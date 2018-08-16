@@ -47,7 +47,8 @@ function croatcoin_init()
             
             
             $this->title        = __('CROAT', 'woocommerce');
-            $this->description  = __('Realitza el pagament directament amb CROATs, t\'enviarem un email amb el total i el moneder on fer l\'ingrés.', 'croatcoin');
+			$this->description  = $this->get_option( 'description' );
+            //$this->description  = __('Realitza el pagament directament amb CROATs, t\'enviarem un email recordant el total i el moneder on fer l\'ingrés.', 'croatcoin');
             $this->instructions = $this->get_option('instructions');
             $this->parity       = $this->get_option('parity');
             
@@ -95,7 +96,13 @@ function croatcoin_init()
                     'default' => '',
                     'desc_tip' => true
                 ),
-                
+				'description'     => array(
+					'title'       => __( 'Descripció', 'woocommerce' ),
+					'type'        => 'textarea',
+					'description' => __( 'Payment method description that the customer will see on your checkout.', 'woocommerce' ),
+					'default'     => __( 'Pots realitzar el pagament ara mateix escanejant el codi QR amb l\'aplicatiu CroatCORE o bé enviant el pagament al nostre moneder.<br> T\'enviarem un email recordant el total i el moneder on fer l\'ingrés.', 'woocommerce' ),
+					'desc_tip'    => true,
+				),				
                 'account_details' => array(
                     'type' => 'account_details',
                     'description' => __('S\'aconsella posar diversos moneders per rebre el pagament.', 'croatcoin'),
@@ -111,6 +118,12 @@ function croatcoin_init()
             global $woocommerce;
             $euros  = $woocommerce->cart->total;
             $paritat = $this->settings['parity'];
+			
+			foreach ($this->account_details as $account) {
+				$wallet = esc_attr(wp_unslash($account['hash_name']));
+			}
+			
+
             
             
             if ($paritat != ""){
@@ -129,10 +142,10 @@ function croatcoin_init()
             
             $dir_croat = plugin_dir_url(__FILE__);
             
-            $icon_html .= '<img src="' . $dir_croat . '/croat.png" alt="'.__('Pagament en CROATS', 'croatcoin').'"/> ';
+            $icon_html .= '<br><br><img src="' . $dir_croat . '/croat.png" alt="'.__('Pagament en CROATS', 'croatcoin').'"/> ';
             $icon_html .= '<a href="https://www.croat.cat" target="_blank" >'.__('Què es CROAT?', 'croatcoin').'</a>';
             
-            $icon_html .= '  <div style="font-size: 13px">'.__('Total en CROATS:', 'croatcoin').' <b>' . $croats . ' CROATS</b>, '.__('aplicant una paritat de', 'croatcoin').' ' . round($paritat, 4) . ' €/CROAT - <small><a href="https://www.worldcoinindex.com/coin/croatcoin" target="_blank">WorldCoinIndex</a></small></div>';
+            $icon_html .= '<br><br><div style="font-size: 13px">Codi QR per al pagament:<br><img src="'.$dir_croat.'/qr_pagament.php?wallet='.$wallet.'&preu='.$croats.'"><br>'.__('Total en CROATS:', 'croatcoin').' <b><font style="font-size: 18px">' . $croats . ' CROATS</font></b><br>'.__('S\'aplica una paritat de', 'croatcoin').' ' . round($paritat, 4) . ' €/CROAT - <small><a href="https://www.worldcoinindex.com/coin/croatcoin" target="_blank">WorldCoinIndex</a></small><br>Moneder per al pagament:<br>'.$wallet.'<br></div>';
             
             return apply_filters('woocommerce_gateway_icon', $icon_html, $this->id);
         }
@@ -268,9 +281,9 @@ function croatcoin_init()
                     $description .= '<br><strong>'.__('WALLET', 'croatcoin').'</strong>: '.$payments[$wallet];
                 }else{
                     $transaction_id = explode(":", get_post_meta( $order->ID, '_transaction_id', true)); 
-                    $description .= "<span style='font-size:14px'>".__('Per completar la comanda, ha d\'enviar la quantitat de', 'croatcoin')." <b>" . $transaction_id[0] . " CROATS</b> ".__('al següent moneder:', 'croatcoin')." <b>";
-                    $description .= $transaction_id[1];
-                    $description .= "</b><br>".__('Un cop es rebi la transacció s\'enviarà la comanda.', 'croatcoin')."</span>";
+                    $description .= "<span style='font-size:14px'>".__('Per completar la comanda, ha d\'enviar la quantitat de', 'croatcoin')." <b>" . $transaction_id[0] . " CROATs</b> ".__('al següent moneder:<br>', 'croatcoin')." <b>";
+                    $description .= $transaction_id[1];					
+                    $description .= "</b><br>".__('<br>Un cop es rebi la transacció procedirem a preparar i enviar la comanda.', 'croatcoin')."</span>";
                 }
                 echo wpautop(wptexturize($description));
             }
@@ -279,7 +292,7 @@ function croatcoin_init()
         public function process_payment($order_id)
         {
             $order = wc_get_order($order_id);
-            $order->update_status('on-hold', __('Awaiting BACS payment', 'woocommerce'));
+            $order->update_status('on-hold', __('Esperant parament en CROAT', 'woocommerce'));
             wc_reduce_stock_levels($order_id);
             WC()->cart->empty_cart();
             return array(
