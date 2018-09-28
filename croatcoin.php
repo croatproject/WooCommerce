@@ -3,9 +3,11 @@
 Plugin Name: CROATCoin WooCommerce Gateway
 Plugin URI: https://github.com/croatproject/WooCommerce
 Description: Passarela de pagament amb CROAT per Woocommerce
-Version: 0.5
+Version: 1.0
 Author: Croat Project Team
 Author URI: https://croat.cat/
+WC tested up to: 3.4.5
+Text Domain: croatcoin
 */
 
 // Load Texts
@@ -311,9 +313,9 @@ function croatcoin_init()
                     $description .= '<br><strong>'.__('WALLET', 'croatcoin').'</strong>: '.$payments[$wallet];
                 }else{
                     $transaction_id = explode(":", get_post_meta( $order->ID, '_transaction_id', true)); 
-                    $description .= "<span style='font-size:14px'>".__('Per completar la comanda, ha d\'enviar la quantitat de', 'croatcoin')." <b>" . $transaction_id[0] . " CROATs</b> ".__('al següent moneder:<br>', 'croatcoin')." <b>";
+                    $description .= "<span style='font-size:14px'>".__('Has escollit pagament en CROAT!<br>Per completar la comanda, has d\'enviar la quantitat de', 'croatcoin')." <b>" . $transaction_id[0] . " CROAT</b> ".__('al següent moneder:<br>', 'croatcoin')." <b>";
                     $description .= $transaction_id[1];                 
-                    $description .= "</b><br>".__('<br>Un cop es rebi la transacció procedirem a preparar i enviar la seva comanda.', 'croatcoin')."</span>";
+                    $description .= "</b><br>".__('<br>Un cop es rebi la transacció procedirem a preparar i enviar la comanda.', 'croatcoin')."</span>";
                 }
                 echo wpautop(wptexturize($description));
             }
@@ -451,7 +453,6 @@ function add_croat_price_cart_subtotal($subtotal, $cart_item, $cart_item_key) {
     $product_price = $cart_item['data']->price;
     $quantitat = $cart_item['quantity'];
     
-    
     if ( is_admin() ) {
         $tag = 'span';
     } else {
@@ -489,7 +490,34 @@ add_filter( 'woocommerce_cart_item_subtotal', 'add_croat_price_cart_subtotal', 1
 
 // Add CROAT Subtotal on Mini Cart
 
-add_filter( 'woocommerce_widget_shopping_cart_before_buttons', 'add_croat_price_cart_subtotal', 10, 3 );
+add_action( 'woocommerce_widget_shopping_cart_before_buttons', 'minicart_subtotal_croat_before_content' );
+
+function minicart_subtotal_croat_before_content() {
+    $cart_subtotal = WC()->cart->total;
+    $text_label  = __( 'Subtotal', 'woocommerce');
+    
+    $croat_settings = get_option('woocommerce_croat_settings');
+    
+    $preu = (float)$cart_subtotal;
+    $paritat = $croat_settings['parity'];
+    $decimals = $croat_settings['decimals'];    
+    $paritat_source = $croat_settings['parity_source'];         
+            
+    if ($paritat != ""){
+        $croats = $preu / (float)$paritat;
+        $croats = round($croats, $decimals);           
+    }
+    
+    else 
+    {
+        $croats = get_croat_price($preu, $paritat_source, $decimals);
+    }
+    
+    ?>
+        <p class="total item-count"><strong><?php echo $text_label; ?>:</strong> <span class="woocommerce-Price-amount amount"><?php echo $croats; ?> CROAT</span></p>
+    <?php
+}
+
 
 // Set CROAT Gateway Default Payment Method
 
@@ -499,9 +527,14 @@ function action_before_checkout_form(){
     WC()->session->set('chosen_payment_method', $default_payment_gateway_id);
 }
 
-// Add CROAT Price on Thank You Page
+// Add CROAT Price on "Thank You Page"
 
-function add_croat_price_to_order_page($order){
+function add_croat_price_to_thankyou_page($order){
+	
+    $method = $order->get_payment_method();
+    
+    if ($method == "croat")
+    {	
 
             $croat_note = '';
             $croat_settings = get_option('woocommerce_croat_settings');
@@ -554,11 +587,55 @@ function add_croat_price_to_order_page($order){
             $croat_note .= '<br></td></tr></table></p>';    
             echo "$croat_note";
             //$order->add_order_note( $croat_note );
+			
+	}
+            
 }
 
-add_action( 'woocommerce_order_details_after_order_table', 'add_croat_price_to_order_page',10,1 );
+add_action( 'woocommerce_order_details_after_order_table', 'add_croat_price_to_thankyou_page',10,1 );
 
-// Display Total CROAT on order Page
+
+// Add Row with Total in CROAT on "Thank You Page"
+
+add_filter( 'woocommerce_get_order_item_totals', 'add_row_with_croat_price_to_thankyou_page', 10, 2 );            
+            
+function add_row_with_croat_price_to_thankyou_page( $total_rows, $order ) {
+
+    $method = $order->get_payment_method();
+    
+    if ($method == "croat")
+    {
+		
+    $croat_settings = get_option('woocommerce_croat_settings');
+    $croat_wallets = get_option('woocommerce_croat_hashs');
+        
+    $preu  = $order->get_total();
+    $paritat = $croat_settings['parity'];
+    $decimals = $croat_settings['decimals'];            
+    $paritat_source = $croat_settings['parity_source'];         
+                      
+    if ($paritat != ""){
+        $croats = $preu / (float)$paritat;
+        $croats = round($croats, $decimals);
+                  
+    }
+     
+    else 
+    {
+        $paritat = get_croat_parity($paritat_source);
+        $croats = get_croat_price($preu, $paritat_source, $decimals);
+                 
+    }  
+            
+    $total_rows['recurr_not'] = array(
+        'label' => __( 'Total en CROAT:', 'croatcoin' ),
+        'value' => ''.$croats.''
+    );
+	}
+    return $total_rows;
+}
+
+// Display Total CROAT on Order Page
     
 function display_total_croat() {
     
@@ -589,6 +666,38 @@ function display_total_croat() {
 
 add_action( 'woocommerce_cart_totals_before_order_total', 'display_total_croat', 99,1);
 add_action( 'woocommerce_review_order_before_order_total', 'display_total_croat', 99,1);
+
+// Add CROAT Total meta to Order
+ 
+function add_croat_total_before_checkout_create_order( $order_id, $data ) {
+    
+    $order = wc_get_order( $order_id );    
+    $croat_settings = get_option('woocommerce_croat_settings');
+    $croat_wallets = get_option('woocommerce_croat_hashs');
+        
+    $preu  = $order_id->get_total();
+    
+    $paritat = $croat_settings['parity'];
+    $decimals = $croat_settings['decimals'];            
+    $paritat_source = $croat_settings['parity_source'];         
+                      
+    if ($paritat != ""){
+        $croats = $preu / (float)$paritat;
+        $croats = round($croats, $decimals);
+                  
+    }
+     
+    else 
+    {
+        $paritat = get_croat_parity($paritat_source);
+        $croats = get_croat_price($preu, $paritat_source, $decimals);
+                 
+    } 
+    
+    $order_id->update_meta_data( '_croat_total_order', ''.$croats.'' );
+}
+
+add_action('woocommerce_checkout_create_order', 'add_croat_total_before_checkout_create_order', 20, 2);
 
 // Function to get CROAT Parity to €
 
@@ -640,3 +749,42 @@ function get_croat_price_qr($preu, $paritat_source, $decimals)
     return $croats;
 } 
 
+// Show total in CROAT at Admin Order Page. 
+
+add_action('woocommerce_admin_order_totals_after_tax', 'custom_admin_order_totals_croat', 10, 2 );
+
+function custom_admin_order_totals_croat( $orderid ) {
+
+    $order = wc_get_order($orderid);
+    $method = $order->get_payment_method();
+    
+    if ($method == "croat")
+    {
+        $label = __( 'Total en CROAT', 'croatcoin' );
+        $order_total_croats = get_post_meta( $order->id, '_croat_total_order', true );
+        $value = $order_total_croats;
+ 
+        echo '<tr>
+                <td class="label">'.$label.':</td>
+                <td width="1%"></td>
+                <td class="custom-total"><span class="woocommerce-Price-amount amount">'.$value.' CROAT</span></td>
+            </tr>';
+    }   
+}
+
+// Show CROAT Parity at footer
+
+add_action('get_footer', 'custom_footer_croat_parity');
+function custom_footer_croat_parity(){
+    
+    $croat_settings = get_option('woocommerce_croat_settings');
+    
+    $paritat = $croat_settings['parity'];
+    $paritat_source = $croat_settings['parity_source'];         
+                      
+    if ($paritat == "")
+    {
+        $paritat = get_croat_parity($paritat_source);
+    }
+    echo '<div style="text-align: center;">Els preus en CROAT s\'obtenen aplicant una paritat de '.$paritat.' €/CROAT.</div>'; 
+};
