@@ -3,9 +3,9 @@
 Plugin Name: CROATCoin WooCommerce Gateway
 Plugin URI: https://github.com/croatproject/WooCommerce
 Description: Passarela de pagament amb CROAT per Woocommerce
-Version: 1.0
-Author: Croat Project Team
-Author URI: https://croat.cat/
+Version: 1.1
+Author: CROATCoin.info Dev Team
+Author URI: https://croatcoin.info/
 WC tested up to: 3.4.5
 Text Domain: croatcoin
 */
@@ -705,10 +705,16 @@ function get_croat_parity($paritat_source)
 {
     if ($paritat_source == "worldcoinindex")
     {
-        $api= "https://www.worldcoinindex.com/apiservice/ticker?key=yCLLGOW7SGGVwi7EPRA3sMe8ewu7BN&label=croatbtc&fiat=eur";
-        $getapi = file_get_contents($api);
-        $valorcroat = json_decode($getapi, true);
-        $paritat= $valorcroat['Markets'][0]['Price'];
+        //$api = wp_remote_get('https://www.worldcoinindex.com/apiservice/ticker?key=jJ0Jlk9UE7jtXddxwkYCQadDk196My&label=croatbtc&fiat=eur');
+        //$getapi = file_get_contents($api);
+        $getapi = wp_remote_get('https://www.worldcoinindex.com/apiservice/ticker?key=jJ0Jlk9UE7jtXddxwkYCQadDk196My&label=croatbtc&fiat=eur');
+        if(is_wp_error($getapi)){
+            return "ERROR al obtenir Paritat!";
+        }
+        else {
+            $valorcroat = json_decode($getapi['body'], true);
+            $paritat= $valorcroat['Markets'][0]['Price'];
+        }
     }
     return $paritat;
 }
@@ -719,13 +725,18 @@ function get_croat_price($preu, $paritat_source, $decimals)
 {
     if ($paritat_source == "worldcoinindex")
     {
-        $api= "https://www.worldcoinindex.com/apiservice/ticker?key=yCLLGOW7SGGVwi7EPRA3sMe8ewu7BN&label=croatbtc&fiat=eur";
-        $getapi = file_get_contents($api);
-        $valorcroat = json_decode($getapi, true);
-        $paritat= $valorcroat['Markets'][0]['Price'];
-        $croats= $preu/$paritat;
-        $croats= round($croats, $decimals);  
-
+        //$api= "https://www.worldcoinindex.com/apiservice/ticker?key=jJ0Jlk9UE7jtXddxwkYCQadDk196My&label=croatbtc&fiat=eur";
+        //$getapi = file_get_contents($api);
+        $getapi = wp_remote_get('https://www.worldcoinindex.com/apiservice/ticker?key=jJ0Jlk9UE7jtXddxwkYCQadDk196My&label=croatbtc&fiat=eur');
+        if(is_wp_error($getapi)){
+            return "ERROR al obtenir Paritat!";
+        }
+        else {        
+            $valorcroat = json_decode($getapi['body'], true);
+            $paritat= $valorcroat['Markets'][0]['Price'];
+            $croats= $preu/$paritat;
+            $croats= round($croats, $decimals);  
+        }
     }
     $croats = strip_tags(wc_price($croats, array('currency' => 'CROAT','decimals' => ''.$decimals.'', )));
     return $croats;
@@ -737,13 +748,18 @@ function get_croat_price_qr($preu, $paritat_source, $decimals)
 {
     if ($paritat_source == "worldcoinindex")
     {
-        $api= "https://www.worldcoinindex.com/apiservice/ticker?key=yCLLGOW7SGGVwi7EPRA3sMe8ewu7BN&label=croatbtc&fiat=eur";
-        $getapi = file_get_contents($api);
-        $valorcroat = json_decode($getapi, true);
-        $paritat= $valorcroat['Markets'][0]['Price'];
-        $croats= $preu/$paritat;
-        $croats= round($croats, $decimals);  
-
+        //$api= "https://www.worldcoinindex.com/apiservice/ticker?key=jJ0Jlk9UE7jtXddxwkYCQadDk196My&label=croatbtc&fiat=eur";
+        //$getapi = file_get_contents($api);
+        $getapi = wp_remote_get('https://www.worldcoinindex.com/apiservice/ticker?key=jJ0Jlk9UE7jtXddxwkYCQadDk196My&label=croatbtc&fiat=eur');
+        if(is_wp_error($getapi)){
+            return "ERROR al obtenir Paritat!";
+        }
+        else {        
+            $valorcroat = json_decode($getapi['body'], true);
+            $paritat= $valorcroat['Markets'][0]['Price'];
+            $croats= $preu/$paritat;
+            $croats= round($croats, $decimals);  
+        }
     }
     //$croats = strip_tags(wc_price($croats, array('currency' => 'CROAT','decimals' => ''.$decimals.'', )));
     return $croats;
